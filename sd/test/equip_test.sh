@@ -41,7 +41,6 @@ led() {
     kill $(ps | grep led_ctl | grep -v grep | awk '{print $1}')
     # then process
     /home/led_ctl $@ &
-
 }
 
 LOG_DIR=/home/hd1/test/
@@ -62,7 +61,12 @@ get_config() {
     grep "^$1=" /home/hd1/test/yi-hack.cfg  | cut -d"=" -f2
 }
 
-
+boot_voice() {
+    voice_file=$1
+    if [ "$(get_config BOOT_VOICE)" = "yes" ]; then
+        /home/rmm "$voice_file" 1
+    fi
+}
 
 ### first we assume that this script is started from /home/init.sh and will replace it from the below lines (which are not commented in init.sh :
 
@@ -113,8 +117,8 @@ cd /home/3518
 himm 0x20050074 0x06802424
 
 ### Let ppl hear that we start
-/home/rmm "/home/hd1/voice/welcome.g726" 1
-/home/rmm "/home/hd1/voice/wait.g726" 1
+boot_voice "/home/hd1/test/voice/welcome.g726"
+boot_voice "/home/hd1/test/voice/wait.g726"
 
 ### start blinking blue led for configuration in progress
 #/home/led_ctl -boff -yon &
@@ -260,7 +264,7 @@ log "Debug mode = $(get_config DEBUG)"
 # first, configure wifi
 
 ### Let ppl hear that we start connect wifi
-/home/rmm "/home/hd1/voice/connectting.g726" 1
+boot_voice "/home/hd1/test/voice/connectting.g726"
 
 HOSTNAME="$(get_config HOSTNAME)"
 HOSTNAME="${HOSTNAME// /}" # strip all whitespace
@@ -310,7 +314,7 @@ log "New datetime is $(date)"
 GATEWAY=$(ip route | awk '/default/ { print $3 }')
 ping -c1 -W2 $GATEWAY > /dev/null
 if [ 0 -eq $? ]; then
-    /home/rmm "/home/hd1/voice/wifi_connected.g726" 1
+    boot_voice "/home/hd1/test/voice/wifi_connected.g726"
 fi
 
 ### set the root password
@@ -411,7 +415,7 @@ GATEWAY=$(ip route | awk '/default/ { print $3 }')
 ping -c1 -W2 $GATEWAY > /dev/null
 if [ 0 -eq $? ]; then
     led $(get_config LED_WHEN_READY)
-    /home/rmm "/home/hd1/voice/success.g726" 1
+    boot_voice "/home/hd1/test/voice/success.g726"
 else
     led -boff -yfast
 fi
