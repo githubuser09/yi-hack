@@ -3,7 +3,7 @@
 # and if found, create the appropriate file for the http server
 
 cd /home/hd1/record/
-while [ 1 -eq 1 ] 
+while [ 1 -eq 1 ]
   do
     motion_file=$(find . -type f -name "*.mp4" -mmin -1 | tail -1)
     echo "M="$motion_file

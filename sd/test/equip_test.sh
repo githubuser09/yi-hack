@@ -437,9 +437,4 @@ log "Storage status :"
 df -h >> ${LOG_FILE}
 
 ### to make sure log are written...
-
 sync
-
-
-
-
